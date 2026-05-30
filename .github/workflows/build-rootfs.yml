@@ -18,8 +18,8 @@ jobs:
         run: ./build-rootfs.sh
 
       - name: Upload rootfs artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6  # 由 v5 改为 v6
         with:
           name: rootfs_128m
           path: build/rootfs_128m.ext4
-          retention-days: 30
+          retention-days: 3
