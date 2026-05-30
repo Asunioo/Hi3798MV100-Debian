@@ -1,0 +1,6 @@
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+    hwaddress BC:25:E0:3F:F1:D9
