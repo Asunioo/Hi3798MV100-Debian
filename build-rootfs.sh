@@ -27,6 +27,12 @@ sudo mount --bind /proc "${ROOTFS_DIR}/proc"
 sudo mount --bind /sys "${ROOTFS_DIR}/sys"
 sudo mount --bind /dev/pts "${ROOTFS_DIR}/dev/pts"
 
+# ===================== 新增：拷贝Overlay配置 =====================
+echo ">>> 拷贝系统预置配置(网络/MAC)"
+sudo cp -r "${GITHUB_WORKSPACE}/overlay"/* "${ROOTFS_DIR}/"
+sudo chmod 644 "${ROOTFS_DIR}/etc/network/interfaces"
+# =================================================================
+
 # Chroot 配置系统
 sudo chroot "${ROOTFS_DIR}" << EOF
 # 修复软件源：移除失效 security 单独源
@@ -63,6 +69,9 @@ rm -rf /usr/local/bin/histb* /etc/init.d/histb*
 # 设置 root 密码
 echo "root:123456" | chpasswd
 
+# 启用传统网络服务开机自启
+systemctl enable networking
+
 # 深度清理缓存、无用文件
 apt clean
 rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -86,4 +95,5 @@ echo "====================================="
 echo "  Debian 12 rootfs 构建完成"
 echo "  镜像: ${IMG_FILE} (256M)"
 echo "  账号: root  密码: 123456"
+echo "  网卡: eth0 自动DHCP  MAC: BC:25:E0:3F:F1:D9"
 echo "====================================="
