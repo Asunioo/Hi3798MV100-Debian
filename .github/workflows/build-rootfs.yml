@@ -1,0 +1,25 @@
+name: Build rootfs_128m.ext4
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Grant execute permission
+        run: chmod +x ./build-rootfs.sh
+
+      - name: Build rootfs image
+        run: ./build-rootfs.sh
+
+      - name: Upload rootfs artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rootfs_128m
+          path: build/rootfs_128m.ext4
+          retention-days: 30
