@@ -50,7 +50,7 @@ apt update -y
 # ===================== 【改动1】扩展基础工具包 =====================
 # 原有工具 + 常用网络/压缩/调试/文件工具，兼顾体积与实用性
 apt install -y \
-systemd openssh-server net-tools iproute2 vim-tiny less \
+systemd openssh-server net-tools iproute2 vim less \
 curl wget dnsutils lsof rsync tree unzip zip xz-utils procps
 
 # ===================== 【改动2】设置中国时区 Asia/Shanghai（无交互） =====================
