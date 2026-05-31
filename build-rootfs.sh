@@ -16,7 +16,7 @@ sudo apt update -y
 sudo apt install -y debootstrap qemu-user-static binfmt-support e2fsprogs
 
 # ========== 关键修改：Ubuntu 20.04.6 LTS (focal) armhf ==========
-sudo debootstrap --arch=armhf focal "${ROOTFS_DIR}" https://mirrors.ustc.edu.cn/ubuntu/
+sudo debootstrap --arch=armhf focal "${ROOTFS_DIR}" http://archive.ubuntu.com/ubuntu/
 
 # 注入 qemu
 sudo cp /usr/bin/qemu-arm-static "${ROOTFS_DIR}/usr/bin/"
