@@ -5,7 +5,8 @@ set -euo pipefail
 TARGET_SUITE="focal"
 TARGET_ARCH="armhf"
 ROOTFS_DIR="./ubuntu-focal-armhf-rootfs"
-UBUNTU_MIRROR="http://old-releases.ubuntu.com/ubuntu"
+# 改用中科大旧版Ubuntu镜像，适配CI网络
+UBUNTU_MIRROR="https://mirrors.ustc.edu.cn/ubuntu-old-releases/ubuntu"
 
 echo "=== Start build ${TARGET_SUITE} ${TARGET_ARCH} rootfs ==="
 
@@ -24,7 +25,7 @@ sudo apt install -y binfmt-support debootstrap qemu-user-static
 echo "Enable binfmt for ${TARGET_ARCH}"
 sudo systemctl restart binfmt-support
 
-# 构建 rootfs（移除 --force，保留必要兼容参数）
+# 构建 rootfs
 echo "Start debootstrap..."
 sudo debootstrap \
     --arch="${TARGET_ARCH}" \
