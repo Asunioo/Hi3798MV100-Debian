@@ -1,12 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-# ===================== 配置项 =====================
+# 配置项
 TARGET_SUITE="focal"
 TARGET_ARCH="armhf"
 ROOTFS_DIR="./ubuntu-focal-armhf-rootfs"
 UBUNTU_MIRROR="http://old-releases.ubuntu.com/ubuntu"
-# ===================================================
 
 echo "=== Start build ${TARGET_SUITE} ${TARGET_ARCH} rootfs ==="
 
@@ -16,21 +15,20 @@ if [ -d "${ROOTFS_DIR}" ]; then
     rm -rf "${ROOTFS_DIR}"
 fi
 
-# 安装依赖（加上 sudo）
+# 安装依赖
 echo "Install dependencies..."
 sudo apt update -y
 sudo apt install -y binfmt-support debootstrap qemu-user-static
 
-# 启用 binfmt 跨架构支持
+# 启用跨架构执行
 echo "Enable binfmt for ${TARGET_ARCH}"
 sudo systemctl restart binfmt-support
 
-# 构建 rootfs
+# 构建 rootfs（移除 --force，保留必要兼容参数）
 echo "Start debootstrap..."
 sudo debootstrap \
     --arch="${TARGET_ARCH}" \
     --variant=minbase \
-    --force \
     --no-check-gpg \
     --components=main,universe,restricted,multiverse \
     "${TARGET_SUITE}" \
