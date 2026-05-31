@@ -15,7 +15,7 @@ jobs:
         run: chmod +x ./build-rootfs.sh
 
       - name: Build rootfs image
-        run: ./build-rootfs.sh
+        run: ./build-rootfs-ubuntu.sh
 
       - name: Upload rootfs artifact
         uses: actions/upload-artifact@v6  # 由 v5 改为 v6
