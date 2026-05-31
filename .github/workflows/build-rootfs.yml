@@ -1,38 +1,25 @@
-name: Build Ubuntu Rootfs for Hi3798MV100
+name: Build rootfs_128m.ext4
 
-# 触发条件：推送到 main 分支时，或支持手动触发
 on:
   push:
-    branches: [ "main" ]
-  workflow_dispatch: # 允许在 GitHub 页面手动点击按钮运行
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Build Rootfs
-    runs-on: ubuntu-latest # 使用最新版的 Ubuntu 虚拟机
-
+    runs-on: ubuntu-latest
     steps:
-      # 1. 检出你的仓库代码
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-      # 2. 安装构建所需的系统依赖 (debootstrap, qemu-user-static 等)
-      - name: Install dependencies
-        run: |
-          sudo apt-get update -y
-          sudo apt-get install -y debootstrap qemu-user-static binfmt-support e2fsprogs
+      - name: Grant execute permission
+        run: chmod +x ./build-rootfs.sh
 
-      # 3. 确保你的构建脚本有执行权限，并运行它
-      # 假设你刚才写的脚本保存为项目根目录下的 build_rootfs.sh
-      - name: Build Rootfs Image
-        run: |
-          chmod +x build_rootfs.sh
-          ./build_rootfs.sh
+      - name: Build rootfs image
+        run: ./build-rootfs.sh
 
-      # 4. 上传构建好的固件镜像
-      - name: Upload Rootfs Artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload rootfs artifact
+        uses: actions/upload-artifact@v6  # 由 v5 改为 v6
         with:
-          name: hi3798mv100-ubuntu-rootfs
-          path: build/rootfs_128m.ext4 # 对应你脚本里生成的镜像路径
-          retention-days: 7 # 产物在 GitHub 上保留 7 天
+          name: rootfs_128m
+          path: build/rootfs_128m.ext4
+          retention-days: 3
