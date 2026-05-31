@@ -50,7 +50,7 @@ apt update -y
 
 # 安装基础工具包（同原列表，Ubuntu 20.04 完全兼容）
 apt install -y \
-systemd openssh-server net-tools iproute2 vim less \
+systemd openssh-server net-tools iproute2 vim-tiny less \
 curl wget dnsutils lsof rsync tree unzip zip xz-utils procps
 
 # 设置中国时区 Asia/Shanghai（无交互）
