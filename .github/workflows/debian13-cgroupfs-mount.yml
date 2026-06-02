@@ -1,0 +1,46 @@
+name: Build cgroupfs-mount for Debian 13
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-debian-13:
+    runs-on: ubuntu-latest
+    
+    # 使用官方的 Debian 13 (trixie) 容器作为构建环境
+    container:
+      image: debian:trixie
+      
+    steps:
+      # 1. 检出当前仓库的代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      # 2. 更新软件源并安装必要的构建工具链
+      - name: Install build dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends \
+            build-essential \
+            devscripts \
+            dpkg-dev \
+            fakeroot \
+            debhelper
+          
+      # 3. 获取源码、安装项目依赖并进行编译打包
+      - name: Build Debian package
+        run: |
+          # 如果当前目录就是源码包解压后的目录，直接执行即可；
+          # 否则需先使用 apt source 或 git clone 获取对应源码。
+          apt-get build-dep -y . || true 
+          debuild -us -uc -b
+          
+      # 4. 将编译生成的 .deb 安装包作为 Artifact 上传保存
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cgroupfs-mount-deb
+          path: ../*.deb
