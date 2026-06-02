@@ -3,7 +3,7 @@ set -euo pipefail
 
 WORK_DIR="$GITHUB_WORKSPACE/build"
 ROOTFS_DIR="${WORK_DIR}/rootfs"
-# 镜像扩容为 256M
+# 镜像文件名不变，实际扩容至512M
 IMG_FILE="${WORK_DIR}/rootfs_128m.ext4"
 MNT_DIR="${WORK_DIR}/mnt"
 
@@ -29,7 +29,7 @@ sudo mount --bind /dev/pts "${ROOTFS_DIR}/dev/pts"
 
 # ===================== 新增：拷贝Overlay配置 =====================
 echo ">>> 拷贝系统预置配置(网络/MAC)"
-sudo cp -r "${GITHUB_WORKSPACE}/overlay"/* "${ROOTFS_DIR}/"
+sudo cp -r "${GITHUB_WORKSPACE}/overlay"/* "${ROOTFS_DIR}/" || true
 sudo chmod 644 "${ROOTFS_DIR}/etc/network/interfaces"
 # =================================================================
 
@@ -47,17 +47,30 @@ export APT_GET_NO_LOCK_WARNING=1
 
 apt update -y
 
-# ===================== 【改动1】扩展基础工具包 =====================
-# 原有工具 + 常用网络/压缩/调试/文件工具，兼顾体积与实用性
+# ===================== 【改动1】扩展基础工具包 + 时间同步组件 =====================
+# 新增 systemd-timesyncd 实现开机自动校时
 apt install -y \
-systemd openssh-server net-tools iproute2 vim-tiny less \
-curl wget dnsutils lsof rsync tree unzip zip xz-utils procps
+systemd openssh-server net-tools iproute2 vim less \
+curl wget dnsutils lsof rsync tree unzip zip xz-utils procps \
+systemd-timesyncd
 
 # ===================== 【改动2】设置中国时区 Asia/Shanghai（无交互） =====================
 export TZ=Asia/Shanghai
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo "Asia/Shanghai" > /etc/timezone
 dpkg-reconfigure -f noninteractive tzdata
+
+# ========== 新增：配置开机自动同步系统时间 ==========
+# 修改timesyncd配置，使用国内NTP服务器
+cat > /etc/systemd/timesyncd.conf << NTPCFG
+[Time]
+NTP=ntp.aliyun.com ntp1.aliyun.com cn.ntp.org.cn
+FallbackNTP=0.debian.pool.ntp.org
+NTPCFG
+# 启用时间同步服务开机自启
+systemctl enable systemd-timesyncd.service
+# 启用系统时钟同步写入硬件RTC
+echo "HWCLOCKACCESS=yes" >> /etc/default/hwclock
 
 # 启用串口 ttyAMA0
 echo "ttyAMA0" >> /etc/securetty
@@ -92,8 +105,9 @@ EOF
 sudo umount "${ROOTFS_DIR}/dev/pts"
 sudo umount "${ROOTFS_DIR}/dev" "${ROOTFS_DIR}/proc" "${ROOTFS_DIR}/sys"
 
-# 制作 256M ext4 镜像（文件名保留 rootfs_128m.ext4 适配原有分区名）
-sudo dd if=/dev/zero of="${IMG_FILE}" bs=1M count=256
+# =====================【镜像大小修改】由256M改为512M，需要更大就改count数值 =====================
+# count=512→512MB
+sudo dd if=/dev/zero of="${IMG_FILE}" bs=1M count=512
 sudo mkfs.ext4 -F "${IMG_FILE}"
 
 # 拷贝文件到镜像
@@ -103,8 +117,8 @@ sudo umount "${MNT_DIR}"
 
 echo "====================================="
 echo "  Debian 12 rootfs 构建完成"
-echo "  镜像: ${IMG_FILE} (256M)"
+echo "  镜像: ${IMG_FILE} (512M)"
 echo "  账号: root  密码: 123456"
 echo "  网卡: eth0 自动DHCP  MAC: BC:25:E0:3F:F1:D9"
+echo "  已开启开机自动NTP时间同步(阿里云NTP)"
 echo "====================================="
-
