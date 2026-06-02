@@ -15,11 +15,11 @@ jobs:
       image: debian:trixie
       
     steps:
-      # 1. 检出当前仓库的代码
+      # 1. 检出当前仓库的代码（如果您需要修改源码，这一步是必须的）
       - name: Checkout repository
         uses: actions/checkout@v4
         
-      # 2. 更新软件源并安装必要的构建工具链
+      # 2. 更新软件源、启用 deb-src 并安装必要的构建工具链
       - name: Install build dependencies
         run: |
           apt-get update
@@ -29,13 +29,24 @@ jobs:
             dpkg-dev \
             fakeroot \
             debhelper
-          
+            
       # 3. 获取源码、安装项目依赖并进行编译打包
       - name: Build Debian package
         run: |
-          # 如果当前目录就是源码包解压后的目录，直接执行即可；
-          # 否则需先使用 apt source 或 git clone 获取对应源码。
-          apt-get build-dep -y . || true 
+          # 追加 Debian 13 (trixie) 的官方源码仓库地址并更新索引
+          echo "deb-src http://deb.debian.org/debian trixie main" >> /etc/apt/sources.list.d/debian-src.list
+          apt-get update
+          
+          # 下载 cgroupfs-mount 官方源码包（会自动解压到当前目录）
+          apt-get source cgroupfs-mount
+          
+          # 自动安装该源码包的编译依赖
+          apt-get build-dep -y cgroupfs-mount
+          
+          # 进入生成的源码目录
+          cd cgroupfs-mount-*
+          
+          # 执行本地编译打包（跳过 GPG 签名步骤）
           debuild -us -uc -b
           
       # 4. 将编译生成的 .deb 安装包作为 Artifact 上传保存
