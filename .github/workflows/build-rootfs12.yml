@@ -11,10 +11,10 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Grant execute permission
-        run: chmod +x ./build-rootfs.sh
+        run: chmod +x ./build-rootfs12.sh
 
       - name: Build rootfs image
-        run: ./build-rootfs.sh
+        run: ./build-rootfs12.sh
 
       - name: Upload rootfs artifact
         uses: actions/upload-artifact@v6  # 由 v5 改为 v6
