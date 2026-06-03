@@ -1,4 +1,4 @@
-name: Build rootfs_128m.ext4
+name: Build rootfs_13.ext4
 
 on:
   workflow_dispatch:
@@ -20,5 +20,5 @@ jobs:
         uses: actions/upload-artifact@v6  # 由 v5 改为 v6
         with:
           name: rootfs_128m
-          path: build/rootfs_128m.ext4
+          path: build/rootfs_13.img
           retention-days: 3
