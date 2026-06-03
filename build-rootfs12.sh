@@ -85,10 +85,6 @@ echo "hi3798mv100" > /etc/hostname
 echo "127.0.0.1   localhost hi3798mv100" > /etc/hosts
 echo "nameserver 114.114.114.114" > /etc/resolv.conf
 
-# 清理海纳思残留
-rm -f /etc/nasversion
-rm -rf /usr/local/bin/histb* /etc/init.d/histb*
-
 # 设置 root 密码
 echo "root:123456" | chpasswd
 
