@@ -3,8 +3,8 @@ set -euo pipefail
 
 WORK_DIR="$GITHUB_WORKSPACE/build"
 ROOTFS_DIR="${WORK_DIR}/rootfs"
-# 镜像文件名不变，实际扩容至384M
-IMG_FILE="${WORK_DIR}/rootfs_128m.ext4"
+# 【修改点】镜像文件名更改为 rootfs_12.img
+IMG_FILE="${WORK_DIR}/rootfs_12.img"
 MNT_DIR="${WORK_DIR}/mnt"
 
 # 清理旧文件
@@ -107,7 +107,7 @@ sudo umount "${ROOTFS_DIR}/dev" "${ROOTFS_DIR}/proc" "${ROOTFS_DIR}/sys"
 
 # =====================【镜像大小修改】由256M改为384M，需要更大就改count数值 =====================
 # count=384 →384MB，count=512→512MB
-sudo dd if=/dev/zero of="${IMG_FILE}" bs=1M count=384
+sudo dd if=/dev/zero of="${IMG_FILE}" bs=1M count=512
 sudo mkfs.ext4 -F "${IMG_FILE}"
 
 # 拷贝文件到镜像
@@ -117,7 +117,7 @@ sudo umount "${MNT_DIR}"
 
 echo "====================================="
 echo "  Debian 12 rootfs 构建完成"
-echo "  镜像: ${IMG_FILE} (384M)"
+echo "  镜像: ${IMG_FILE} (512M)"
 echo "  账号: root  密码: 123456"
 echo "  网卡: eth0 自动DHCP  MAC: BC:25:E0:3F:F1:D9"
 echo "  已开启开机自动NTP时间同步(阿里云NTP)"
