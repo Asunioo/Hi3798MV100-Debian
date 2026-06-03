@@ -16,7 +16,8 @@ sudo apt update -y
 sudo apt install -y debootstrap qemu-user-static binfmt-support e2fsprogs
 
 # 拉取 Debian 12 Bookworm armhf
-sudo debootstrap --arch=armhf bookworm "${ROOTFS_DIR}" https://mirrors.ustc.edu.cn/debian/
+# 【修改点】将USTC源更换为华为云源
+sudo debootstrap --arch=armhf bookworm "${ROOTFS_DIR}" https://mirrors.huaweicloud.com/debian/
 
 # 注入 qemu
 sudo cp /usr/bin/qemu-arm-static "${ROOTFS_DIR}/usr/bin/"
@@ -36,9 +37,10 @@ sudo chmod 644 "${ROOTFS_DIR}/etc/network/interfaces"
 # Chroot 配置系统
 sudo chroot "${ROOTFS_DIR}" << EOF
 # 修复软件源：移除失效 security 单独源
+# 【修改点】将USTC源更换为华为云源
 cat > /etc/apt/sources.list << SRC
-deb https://mirrors.ustc.edu.cn/debian/ bookworm main contrib non-free
-deb https://mirrors.ustc.edu.cn/debian/ bookworm-updates main contrib non-free
+deb https://mirrors.huaweicloud.com/debian/ bookworm main contrib non-free
+deb https://mirrors.huaweicloud.com/debian/ bookworm-updates main contrib non-free
 SRC
 
 # 屏蔽apt非稳定接口警告
@@ -102,7 +104,7 @@ sudo umount "${ROOTFS_DIR}/dev/pts"
 sudo umount "${ROOTFS_DIR}/dev" "${ROOTFS_DIR}/proc" "${ROOTFS_DIR}/sys"
 
 # =====================【镜像大小修改】由256M改为384M，需要更大就改count数值 =====================
-# count=384 →384MB，count=512→512MB
+# count=384 →384MB, count=512→512MB
 sudo dd if=/dev/zero of="${IMG_FILE}" bs=1M count=512
 sudo mkfs.ext4 -F "${IMG_FILE}"
 
