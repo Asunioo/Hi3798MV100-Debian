@@ -19,6 +19,6 @@ jobs:
       - name: Upload rootfs artifact
         uses: actions/upload-artifact@v6  # 由 v5 改为 v6
         with:
-          name: rootfs_128m
+          name: rootfs_13
           path: build/rootfs_13.img
           retention-days: 3
