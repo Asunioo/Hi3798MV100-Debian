@@ -1,4 +1,4 @@
-name: Build rootfs_13.ext4
+name: Build rootfs_13.img
 
 on:
   workflow_dispatch:
