@@ -41,6 +41,7 @@ sudo chroot "${ROOTFS_DIR}" << EOF
 cat > /etc/apt/sources.list << SRC
 deb https://mirrors.huaweicloud.com/debian/ bookworm main contrib non-free
 deb https://mirrors.huaweicloud.com/debian/ bookworm-updates main contrib non-free
+deb https://repo.huaweicloud.com/debian/ bookworm-backports main contrib non-free non-free-firmware
 SRC
 
 # 屏蔽apt非稳定接口警告
