@@ -39,6 +39,7 @@ sudo chroot "${ROOTFS_DIR}" << EOF
 cat > /etc/apt/sources.list << SRC
 deb https://repo.huaweicloud.com/debian/ trixie main contrib non-free non-free-firmware
 deb https://repo.huaweicloud.com/debian/ trixie-updates main contrib non-free non-free-firmware
+deb https://repo.huaweicloud.com/debian/ trixie-backports main contrib non-free non-free-firmware
 SRC
 
 # 屏蔽apt非稳定接口警告
